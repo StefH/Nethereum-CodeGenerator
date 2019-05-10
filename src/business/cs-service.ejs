@@ -1,0 +1,411 @@
+using System;
+using System.Numerics;
+using System.Threading;
+using System.Threading.Tasks;
+using Nethereum.Contracts;
+using Nethereum.ABI.FunctionEncoding.Attributes;
+using Nethereum.Hex.HexTypes;
+using Nethereum.RPC.Eth.DTOs;
+using Nethereum.Web3;
+
+// Created with 'Nethereum-CodeGenerator' https://github.com/StefH/Nethereum-CodeGenerator by stef.heyenrath@mstack.nl (mStack B.V.)
+// Based on abi-code-gen (https://github.com/Nethereum/abi-code-gen)
+namespace <%= locals.namespace ? namespace : 'DefaultNamespace' %>
+{
+    public class <%= capitalizeFirstLetter(getContractName()) %>Service : I<%= capitalizeFirstLetter(getContractName()) %>Service
+    {
+        public static string ABI = @"<%- abiToText(abi) %>";
+
+        public static string ByteCode = "0x<%-bytecode%>";
+
+        public static async Task<string> DeployContractAsync(Web3 web3, string addressFrom, <%-generateConstructorInputParameters(abi)%> CancellationTokenSource token = null, HexBigInteger gas = null)
+        {
+            if (gas == null)
+            {
+                BigInteger estimatedGas = await web3.Eth.DeployContract.EstimateGasAsync(ABI, ByteCode, addressFrom).ConfigureAwait(false);
+                gas = new HexBigInteger(estimatedGas);
+            }
+
+            var transactionReceipt = await web3.Eth.DeployContract.SendRequestAndWaitForReceiptAsync(ABI, ByteCode, addressFrom, gas, token<%-generateConstructorParameters(abi)%>).ConfigureAwait(false);
+            return transactionReceipt.ContractAddress;
+        }
+
+        private readonly Web3 _web3;
+        private readonly Contract _contract;
+
+        public <%= capitalizeFirstLetter(getContractName()) %>Service(Web3 web3, string address)
+        {
+            _web3 = web3;
+            _contract = _web3.Eth.GetContract(ABI, address);
+        }
+
+        public async Task<TransactionReceipt> ExecuteTransactionAsync(Func<I<%= capitalizeFirstLetter(getContractName()) %>Service, Task<string>> func, int timeoutInSeconds)
+        {
+            var cts = new CancellationTokenSource(TimeSpan.FromSeconds(timeoutInSeconds));
+
+            string transaction = await func(this);
+            var receipt = await _web3.Eth.Transactions.GetTransactionReceipt.SendRequestAsync(transaction).ConfigureAwait(false);
+
+            while (receipt == null && !cts.IsCancellationRequested)
+            {
+                await Task.Delay(500);
+                receipt = await _web3.Eth.Transactions.GetTransactionReceipt.SendRequestAsync(transaction).ConfigureAwait(false);
+            }
+
+            return receipt;
+        }
+
+        public Task<BlockWithTransactions> GetBlockWithTransactionsAsync(string blockhash)
+        {
+            return _web3.Eth.Blocks.GetBlockWithTransactionsByHash.SendRequestAsync(blockhash);
+        }
+
+<%= abi.forEach(generateGetFunction) %>
+<%= abi.forEach(generateGetEvent) %>
+<%= abi.forEach(generateFunctionCall) %>
+<%= abi.forEach(generateFunctionTransaction) %>
+<%= abi.forEach(generateFunctionCallMultipleOutputsDTO) %>
+
+    }
+
+<%= abi.forEach(generateFunctionOutputDTO) %>
+<%= abi.forEach(generateEventDTO) %>
+}
+<%_
+function getContractName() {
+   return locals._contractName ? locals._contractName : 'DefaultContractName';
+}
+
+function capitalizeFirstLetter(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
+function abiToText(abi) {
+    return JSON.stringify(abi).split('\"').join('\"\"');
+}
+
+function getGenericReturnType(item) {
+    var returnType = getReturnType(item);
+    return item === null ? '' : '<' + returnType + '>';
+}
+
+function generateFunctionInputParameters(item) {
+    var params = '';
+    if (item.inputs !== null && item.inputs.length > 0) {
+        
+        item.inputs.forEach( function(input, index) {
+            var prefix = ', ';
+            if (params === '') {
+                prefix = '';
+            }
+            params = params + prefix + getTypeMap(input.type) + ' ' + getParamName(input.name, index);
+        })
+    } 
+    return params;
+}
+
+function getParamName(param, index) {
+    if (param !== '') {
+        return param;
+    }
+
+    switch (index) {
+        case 0:
+            return 'a';
+        case 1:
+            return 'b';
+        case 2:
+            return 'c';
+        case 3:
+            return 'd';
+        case 4:
+            return 'e';
+        case 5:
+            return 'f';
+        case 6:
+            return 'g';
+    }
+    return 'h';
+}
+
+function generateFunctionTransactionInputParameters(item) {
+    var params = generateFunctionInputParameters(item);
+
+    return params !== '' ? params + ',' : params;
+}
+
+function generateConstructorInputParameters(abi) {
+    var ret = '';
+    abi.forEach(function(item) {
+        if (item.type === 'constructor') {
+            ret = generateFunctionTransactionInputParameters(item);
+        }
+    });
+    return ret;
+}
+
+function generateConstructorParameters(abi) {
+    var ret = '';
+    abi.forEach( function(item) {
+        if (item.type === 'constructor') {
+            ret = generateFunctionParametersCommaPrefix(item);
+        }
+    });
+    return ret;
+}
+
+function generateFunctionParametersCommaPrefix(item) {
+    var ret = generateFunctionParameters(item);
+    return ret !== '' ? ', ' + ret : ret;
+}
+
+function generateFunctionParameters(item) {
+    var params = '';
+    if (item.inputs !== null && item.inputs.length > 0) {
+        
+        item.inputs.forEach( function(input, index) {
+            var prefix = ', ';
+            if (params === '') {
+                prefix = '';
+            }
+            params = params + prefix + getParamName(input.name, index);
+        })
+    } 
+    return params;
+}
+
+function getReturnType(item) {
+    if (item.outputs !== null && item.outputs.length === 1) {
+        return getTypeMap(item.outputs[0].type);
+    }
+    return null;
+}
+
+function getTypeMap(typeName) {
+    var indexFirstBracket = typeName.indexOf('[');
+    if (indexFirstBracket > -1) {
+        var elementTypeName = typeName.substring(0, indexFirstBracket);
+        return getTypeMap(elementTypeName) + '[]';
+    }
+
+    if ('bool' === typeName) {
+        return typeName;
+    }
+
+    if (typeName.startsWith('int')) {
+        // default
+        if (typeName.length === 3) {
+            return 'BigInteger';
+        }
+
+        var length = parseInt(typeName.substring(3));
+        
+        if (length > 64) {
+            return 'BigInteger';
+        }
+
+        if (length <= 64 && length > 32) {
+            return 'long';
+        }
+
+        // ints are in 8 bits
+        if (length === 32 ) {
+            return 'int';
+        }
+
+        if (length === 16 ) {
+            return 'short';
+        }
+
+        if (length === 8 ) {
+            return 'sbyte';
+        }
+    }
+
+    if (typeName.startsWith('uint')) {
+       
+        if (typeName.length === 4) {
+            return 'BigInteger';
+        }
+
+        var length = parseInt(typeName.substring(4));
+        
+        if (length > 64) {
+            return 'BigInteger';
+        }
+
+        if (length <= 64 && length > 32) {
+            return 'ulong';
+        }
+        
+        // uints are in 8 bits steps
+        if (length === 32 ) {
+            return 'int';
+        }
+
+        if (length === 16 ) {
+            return 'short';
+        }
+
+        if (length === 8 ) {
+            return 'byte';
+        }
+    }
+
+    if (typeName === 'address') {
+        return 'string';
+    }
+
+    if (typeName === 'string') {
+        return 'string';
+    }
+
+    if (typeName === 'bytes') {
+        return 'byte[]';
+    }
+
+    // if (typeName === 'bytes32') {
+    //     return 'string';
+    // }
+
+    if (typeName.startsWith('bytes')) {
+        return 'byte[]';
+    }
+}
+
+_%>
+<%_ function generateGetFunction(item) { _%>
+    <%_ if (item.type === 'function') { _%>
+        private Function GetFunction<%= capitalizeFirstLetter(item.name) %>()
+        {
+            return _contract.GetFunction("<%=item.name%>");
+        }
+
+<%_ } }
+_%>
+<%_ function generateGetEvent(item) { _%>
+    <%_ if (item.type === 'event') { _%>
+        <%_ var eventName = capitalizeFirstLetter(item.name); _%>
+        public Event<<%=eventName%>> Get<%=eventName%>()
+        {
+            return _contract.GetEvent<<%=eventName%>>("<%=item.name%>");
+        }
+
+<%_ } }
+_%>
+<%_ function generateFunctionCall_Original(item) { _%>
+    <%_ if (item.type === 'function' && (item.outputs !== null && item.outputs.length === 1)) { _%>
+        public Task<%- getGenericReturnType(item) -%> <%= capitalizeFirstLetter(item.name) %>CallAsync(<%- generateFunctionInputParameters(item) -%>)
+        {
+            var function = GetFunction<%=capitalizeFirstLetter(item.name)%>();
+            return function.CallAsync<%- getGenericReturnType(item) -%>(<%- generateFunctionParameters(item) -%>);
+        }
+
+<%_ } }
+_%>
+<%_ function generateFunctionCall(item) { _%>
+    <%_ if (item.type === 'function' && (item.outputs !== null && item.outputs.length === 1)) { _%>
+        public Task<%- getGenericReturnType(item) -%> <%= capitalizeFirstLetter(item.name) %>CallAsync(<%- generateFunctionInputParameters(item) -%>)
+        {
+            var function = GetFunction<%=capitalizeFirstLetter(item.name)%>();
+            return function.CallAsync<%- getGenericReturnType(item) -%>(<%- generateFunctionParameters(item) -%>);
+        }
+
+        public async Task<%- getGenericReturnType(item) -%> <%= capitalizeFirstLetter(item.name) %>CallAsync(string addressFrom, <%- generateFunctionTransactionInputParameters(item) -%> HexBigInteger gas = null, HexBigInteger valueAmount = null)
+        {
+            var function = GetFunction<%=capitalizeFirstLetter(item.name)%>();
+
+            if (gas == null)
+            {
+                BigInteger estimatedGas = await function.EstimateGasAsync(addressFrom, gas, valueAmount<%- generateFunctionParametersCommaPrefix(item) -%>).ConfigureAwait(false);
+                gas = new HexBigInteger(estimatedGas);
+            }
+
+            return await function.CallAsync<%- getGenericReturnType(item) -%>(addressFrom, gas, valueAmount<%- generateFunctionParametersCommaPrefix(item) -%>).ConfigureAwait(false);
+        }
+
+<%_ } }
+_%>
+<%_ function generateFunctionCallMultipleOutputsDTO_Original(item) { _%>
+    <%_ if (item.type === 'function' && (item.outputs !== null && item.outputs.length > 1)) { _%>
+        public Task<<%- capitalizeFirstLetter(item.name)  -%>> <%= capitalizeFirstLetter(item.name) %>CallAsync(<%- generateFunctionInputParameters(item) -%>)
+        {
+            var function = GetFunction<%=capitalizeFirstLetter(item.name)%>();
+            return function.CallDeserializingToObjectAsync<<%- capitalizeFirstLetter(item.name) -%>>(<%- generateFunctionParameters(item) -%>);
+        }
+
+<%_ } }
+_%>
+<%_ function generateFunctionCallMultipleOutputsDTO(item) { _%>
+    <%_ if (item.type === 'function' && (item.outputs !== null && item.outputs.length > 1)) { _%>
+        public Task<<%- capitalizeFirstLetter(item.name)  -%>> <%= capitalizeFirstLetter(item.name) %>CallAsync(<%- generateFunctionInputParameters(item) -%>)
+        {
+            var function = GetFunction<%=capitalizeFirstLetter(item.name)%>();
+            return function.CallDeserializingToObjectAsync<<%- capitalizeFirstLetter(item.name) -%>>(<%- generateFunctionParameters(item) -%>);
+        }
+
+        public async Task<<%- capitalizeFirstLetter(item.name)  -%>> <%= capitalizeFirstLetter(item.name) %>CallAsync(string addressFrom, <%- generateFunctionTransactionInputParameters(item) -%>  HexBigInteger gas = null, HexBigInteger valueAmount = null)
+        {
+            var function = GetFunction<%=capitalizeFirstLetter(item.name)%>();
+
+            if (gas == null)
+            {
+                BigInteger estimatedGas = await function.EstimateGasAsync(addressFrom, gas, valueAmount<%- generateFunctionParametersCommaPrefix(item) -%>).ConfigureAwait(false);
+                gas = new HexBigInteger(estimatedGas);
+            }
+
+            return await function.CallDeserializingToObjectAsync<<%- capitalizeFirstLetter(item.name) -%>>(addressFrom, gas, valueAmount<%- generateFunctionParametersCommaPrefix(item) -%>).ConfigureAwait(false);
+        }
+
+<%_ } }
+_%>
+<%_ function generateFunctionTransaction(item) { _%>
+    <%_ if (item.type === 'function' && item.constant === false) { _%>
+        public async Task<string> <%= capitalizeFirstLetter(item.name) %>Async(string addressFrom, <%- generateFunctionTransactionInputParameters(item) -%> HexBigInteger gas = null, HexBigInteger valueAmount = null)
+        {
+            var function = GetFunction<%=capitalizeFirstLetter(item.name)%>();
+
+            if (gas == null)
+            {
+                BigInteger estimatedGas = await function.EstimateGasAsync(addressFrom, gas, valueAmount<%- generateFunctionParametersCommaPrefix(item) -%>).ConfigureAwait(false);
+                gas = new HexBigInteger(estimatedGas);
+            }
+
+            return await function.SendTransactionAsync(addressFrom, gas, valueAmount<%- generateFunctionParametersCommaPrefix(item) -%>).ConfigureAwait(false);
+        }
+
+<%_ } }
+_%>
+<%_ function generateFunctionOutputDTOProperty(param, index) { _%>
+        [Parameter("<%=param.type%>", "<%=param.name%>", <%=index + 1%>)]
+        public <%-getTypeMap(param.type)-%> <%-capitalizeFirstLetter(getParamName(param.name, index))-%> { get; set; }
+
+<%_ }
+_%>
+<%_ function generateEventDTOProperty(param, index) { _%>
+        [Parameter("<%=param.type%>", "<%=param.name%>", <%=index + 1%>, <%= param.indexed ? 'true' : 'false'%>)]
+        public <%-getTypeMap(param.type)-%> <%-capitalizeFirstLetter(getParamName(param.name, index))-%> { get; set; }
+
+<%_ }
+_%>
+<%_ function generateFunctionOutputDTO(item) { _%>
+    <%_ if (item.type === 'function' && item.outputs !== null && item.outputs.length > 1 ) { _%>
+    [FunctionOutput]
+    public class <%=capitalizeFirstLetter(item.name)%>
+    {
+<%- item.outputs.forEach(generateFunctionOutputDTOProperty) -%>
+    }
+
+<%_ } }
+_%>
+<%_ function generateEventDTO(item) { _%>
+    <%_ if (item.type === 'event' && item.inputs !== null && item.inputs.length > 1 ) { _%>
+    <%_ var eventName = capitalizeFirstLetter(item.name); _%>
+    [Event("<%=eventName%>")]
+    public class <%=eventName%> : IEventDTO
+    {
+<%- item.inputs.forEach(generateEventDTOProperty) -%>
+    }
+
+<%_ } }
+_%>
