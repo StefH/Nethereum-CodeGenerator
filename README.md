@@ -2,7 +2,11 @@
 
 A Nethereum Generator which creates a C# Interface and Service based on Solidity Smart Contracts.
 
-## Overview
+## Demo
+
+A demo is running at [stefh.github.io/Nethereum-CodeGenerator](https://stefh.github.io/Nethereum-CodeGenerator/#/generate).
+
+## Usage
 
 - (1) : Select the main Solidity Contract
 - (2) : Optionally select the Solidity Contracts which are imported by the main Solidity Contract
