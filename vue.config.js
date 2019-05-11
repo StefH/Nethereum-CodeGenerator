@@ -12,8 +12,8 @@ module.exports = {
     config.module
       .rule('ejs')
       .test(/\.ejs$/)
-      .use('ejs-compiled-loader-webpack4')
-      .loader('ejs-compiled-loader-webpack4')
+      .use('@testerum/ejs-compiled-loader-webpack4-nodeps')
+      .loader('@testerum/ejs-compiled-loader-webpack4-nodeps')
       .end();
   },
 };
