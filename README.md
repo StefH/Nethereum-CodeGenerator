@@ -20,21 +20,32 @@ A Nethereum Generator which creates a C# Interface and Service based on Solidity
 
 ## Project setup
 
-```
+```cmd
 npm install
 ```
 
 ### Compiles and hot-reloads for development
-```
+
+```cmd
 npm run serve
 ```
 
 ### Compiles and minifies for production
-```
+
+```cmd
 npm run build
 ```
 
-### Lints and fixes files
+### Compiles and minifies for github-pages
+
+```cmd
+npm run github
 ```
+
+See also <https://cli.vuejs.org/guide/deployment.html>.
+
+### Lints and fixes files
+
+```cmd
 npm run lint
 ```

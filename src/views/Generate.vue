@@ -126,48 +126,52 @@
 </style>
 
 <script>
-import ContractCompiler from "../business/ContractCompiler";
-import Utils from "../business/utils";
-import { saveAs } from "file-saver";
+import { saveAs } from 'file-saver';
+import ContractCompiler from '../business/ContractCompiler';
+import Utils from '../business/utils';
 
 export default {
-  name: "Generate",
+  name: 'Generate',
   computed: {
-    downloadInterfaceDisabled() { return this.busy || this.generatedInterfaceText.length === 0 },
-    downloadServiceDisabled() { return this.busy || this.generatedServiceText.length === 0 }
+    downloadInterfaceDisabled() {
+      return this.busy || this.generatedInterfaceText.length === 0;
+    },
+    downloadServiceDisabled() {
+      return this.busy || this.generatedServiceText.length === 0;
+    },
   },
   data() {
     return {
       busy: false,
-      errorMesssage: "",
+      errorMesssage: '',
       contract: {},
       contracts: {},
       selectCompilers: [],
-      selectedCompiler: "v0.5.2-stable-2018.12.19",
-      generatedServiceText: "",
-      generatedInterfaceText: "",
-      namespace: "DefaultNamespace"
+      selectedCompiler: 'v0.5.2-stable-2018.12.19',
+      generatedServiceText: '',
+      generatedInterfaceText: '',
+      namespace: 'DefaultNamespace',
     };
   },
   async mounted() {
     const versions = await ContractCompiler.getVersions();
     this.selectCompilers = versions.map(version => ({
       label: version,
-      value: version
+      value: version,
     }));
   },
   methods: {
     clearGeneratedFields() {
-      this.errorMesssage = "";
-      this.generatedServiceText = "";
-      this.generatedInterfaceText = "";
+      this.errorMesssage = '';
+      this.generatedServiceText = '';
+      this.generatedInterfaceText = '';
     },
     async generateCode() {
       try {
         const contractCompiler = new ContractCompiler(
           this.contract,
           this.contracts,
-          this.namespace
+          this.namespace,
         );
 
         this.clearGeneratedFields();
@@ -190,26 +194,26 @@ export default {
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
 
-        reader.onloadend = async e => {
+        reader.onloadend = async (e) => {
           const content = e.target.result;
           this.contract = {
             filename: file.name,
             name: Utils.sanitizeFilename(file.name),
-            content
+            content,
           };
 
-          console.log("uploadMainContract done");
+          console.log('uploadMainContract done');
           console.log(
-            `Loading ${this.$refs.uploaderOther.files.length} extra files`
+            `Loading ${this.$refs.uploaderOther.files.length} extra files`,
           );
-          if (this.$refs.uploaderOther.files.length == 0) {
+          if (this.$refs.uploaderOther.files.length === 0) {
             await this.generateCode();
           }
 
           resolve();
         };
 
-        reader.onerror = e => {
+        reader.onerror = (e) => {
           reject(e);
         };
 
@@ -222,7 +226,7 @@ export default {
         const reader = new FileReader();
 
         // Wait till complete
-        reader.onloadend = async e => {
+        reader.onloadend = async (e) => {
           const content = e.target.result;
           this.contracts[Utils.sanitizeFilename(file.name)] = content;
 
@@ -232,7 +236,7 @@ export default {
         };
 
         // Make sure to handle error states
-        reader.onerror = e => {
+        reader.onerror = (e) => {
           reject(e);
         };
 
@@ -251,17 +255,25 @@ export default {
       this.$refs.uploaderOther.upload();
     },
     DownloadInterface() {
-      const file = new File([this.generatedInterfaceText], `${this.contract.name}Service.cs`, {
-        type: "text/plain;charset=utf-8"
-      });
+      const file = new File(
+        [this.generatedInterfaceText],
+        `${this.contract.name}Service.cs`,
+        {
+          type: 'text/plain;charset=utf-8',
+        },
+      );
       saveAs(file);
     },
     DownloadService() {
-      const file = new File([this.generatedServiceText], `I${this.contract.name}Interface.cs`, {
-        type: "text/plain;charset=utf-8"
-      });
+      const file = new File(
+        [this.generatedServiceText],
+        `I${this.contract.name}Interface.cs`,
+        {
+          type: 'text/plain;charset=utf-8',
+        },
+      );
       saveAs(file);
-    }
-  }
+    },
+  },
 };
 </script>
