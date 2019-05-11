@@ -1,6 +1,6 @@
 /* eslint-disable no-useless-escape */
 module.exports = {
-  publicPath: process.env.NODE_ENV === 'production' ? '/' : '/',
+  publicPath: process.env.NODE_ENV === 'production' ? '/Nethereum-CodeGenerator/' : '/',
   pluginOptions: {
     quasar: {
       theme: 'mat',
