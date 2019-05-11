@@ -12,8 +12,8 @@ module.exports = {
     config.module
       .rule('ejs')
       .test(/\.ejs$/)
-      .use('raw-loader')
-      .loader('raw-loader')
+      .use('ejs-compiled-loader-webpack4')
+      .loader('ejs-compiled-loader-webpack4')
       .end();
   },
 };

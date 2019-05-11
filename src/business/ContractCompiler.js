@@ -1,10 +1,9 @@
-/* eslint-disable import/no-webpack-loader-syntax */
-import ejsTemplateService from '!raw-loader!./cs-service.ejs';
-import ejsTemplateInterface from '!raw-loader!./cs-service-interface.ejs';
+import solc from 'solcjs-lightweight';
 import Utils from './utils';
 
-const ejs = require('ejs');
-const solc = require('solcjs-lightweight');
+// https://github.com/rails/webpacker/issues/408
+const ejsTemplateService = require('./cs-service.ejs');
+const ejsTemplateInterface = require('./cs-service-interface.ejs');
 
 class ContractCompiler {
   constructor(mainContract, otherContracts, preferredNamespace, generateAllInterfacesAndImplementations = true, combineContracts = true) {
@@ -66,12 +65,10 @@ class ContractCompiler {
     };
 
     console.log(`${contractName}: generate C# interface(s)`);
-    const templateInterface = ejs.compile(ejsTemplateInterface);
-    this.generatedInterface[contractName] = templateInterface(combinedInput);
+    this.generatedInterface[contractName] = ejsTemplateInterface(combinedInput);
 
     console.log(`${contractName}: generate C# implementation(s)`);
-    const templateService = ejs.compile(ejsTemplateService);
-    this.generatedService[contractName] = templateService(combinedInput);
+    this.generatedService[contractName] = ejsTemplateService(combinedInput);
   }
 
   generateFilesForContract(contract) {
