@@ -5,6 +5,9 @@ import Utils from './utils';
 const ejsTemplateService = require('./cs-service.ejs');
 const ejsTemplateInterface = require('./cs-service-interface.ejs');
 
+// This RegEx matches the import statements and replaces "./xxx.sol" and "./sub-folder/xxx.sol" by "xxx.sol"
+const importRegEx = /^(.*import){1}(.+){0,1}\s['"](.+)['"];/gm;
+
 class ContractCompiler {
   constructor(mainContract, otherContracts, preferredNamespace, generateAllInterfacesAndImplementations = true, combineContracts = true) {
     this.mainContract = mainContract;
@@ -18,6 +21,22 @@ class ContractCompiler {
     this.generatedInterface = {};
   }
 
+  replaceImports(source) {
+    const matches = [];
+    let match = null;
+
+    // eslint-disable-next-line no-cond-assign
+    while ((match = importRegEx.exec(source))) {
+      matches.push(match[3]);
+    }
+
+    matches.forEach((matchedImportStatement) => {
+      source.replace(matchedImportStatement, Utils.sanitizeImport(matchedImportStatement));
+    });
+
+    return source;
+  }
+
   static async getVersions() {
     const select = await solc.versions();
     return select.releases;
@@ -29,17 +48,18 @@ class ContractCompiler {
     const compiler = await solc(compilerVersion);
     console.log(`Compiling contracts with solc version '${compiler.version.name}'`);
 
-    const output = await compiler(this.mainContract.content, async (contractFilename) => {
+    const mainContract = this.replaceImports(this.mainContract.content);
+    const output = await compiler(mainContract, async (contractFilename) => {
       const contractName = Utils.sanitizeFilename(contractFilename);
       console.log(`Resolving contract '${contractFilename}' (${contractName})`);
 
-      const contractContent = this.otherContracts[contractName] || 'ERROR !!!';
+      const importedContractContent = this.replaceImports(this.otherContracts[contractName] || '');
 
       if (this.combineContracts) {
-        this.combinedContractContent = `${this.combinedContractContent}${this.stripContractContent(contractContent)}`;
+        this.combinedContractContent = `${this.combinedContractContent}${this.stripContractContent(importedContractContent)}`;
       }
 
-      return contractContent;
+      return importedContractContent;
     });
 
     if (this.generateAllInterfacesAndImplementations) {
@@ -51,6 +71,7 @@ class ContractCompiler {
     }
 
     return {
+      combinedContractContent: this.combinedContractContent,
       generatedService: this.generatedService,
       generatedInterface: this.generatedInterface,
     };

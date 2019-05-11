@@ -1,7 +1,7 @@
 pragma solidity ^0.5.2;
 
 
-import "AuthorizationContract.sol";
+import "./AuthorizationContract.sol";
 
 
 contract OrderContract is AuthorizationContract {

@@ -1,7 +1,7 @@
 pragma solidity ^0.5.2;
 
 
-import "OrderContract.sol";
+import "./OrderContract.sol";
 
 
 contract SupplyChainLogContract is OrderContract {
