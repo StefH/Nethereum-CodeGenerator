@@ -53,7 +53,7 @@ class ContractCompiler {
       const contractName = Utils.sanitizeFilename(contractFilename);
       console.log(`Resolving contract '${contractFilename}' (${contractName})`);
 
-      const importedContractContent = this.replaceImports(this.otherContracts[contractName] || '');
+      const importedContractContent = this.replaceImports(this.otherContracts[contractName] || 'Error !!!');
 
       if (this.combineContracts) {
         this.combinedContractContent = `${this.combinedContractContent}${this.stripContractContent(importedContractContent)}`;
