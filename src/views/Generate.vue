@@ -8,7 +8,7 @@
       <div class="col-2">
         <p class="caption">Main Solidity Contract</p>
       </div>
-      <div class="col-2">
+      <div class="col-3">
         <q-uploader
           ref="uploaderMain"
           hide-upload-button
@@ -23,7 +23,7 @@
       <div class="col-2">
         <p class="caption">Imported Solidity Contract(s)</p>
       </div>
-      <div class="col-2">
+      <div class="col-3">
         <q-uploader
           ref="uploaderOther"
           multiple
