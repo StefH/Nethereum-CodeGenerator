@@ -6,7 +6,9 @@
     "serve": "vue-cli-service serve",
     "serve2": "node --max_old_space_size=4096 node_modules/@vue/cli-service/bin/vue-cli-service.js serve --open",
     "build": "vue-cli-service build",
-    "github": "vue-cli-service build --dest docs",
+    "build-serve": "serve -s dist",
+    "github": "vue-cli-service build --modern --dest docs",
+    "github-serve": "serve -s docs",
     "lint": "vue-cli-service lint",
     "ejs-lint": "ejslint ./src/business/*.ejs",
     "test:unit": "vue-cli-service test:unit"
