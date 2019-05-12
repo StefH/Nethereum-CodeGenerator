@@ -63,12 +63,16 @@
 
     <div class="row">
       <div class="col-8">
-        <br>
-        <br>
-        <p v-show="busy">Compiling contracts and generating C# Interface and Service...</p>
-        <br>
-        <br>
-        <p v-show="errorMesssage" class="error">Error : {{ errorMesssage }}</p>
+        <div v-show="busy">
+          <br>
+          <p v-show="busy">Compiling contracts and generating C# Interface and Service...</p>
+          <br>
+        </div>
+        <div>
+          <br>
+          <p v-show="errorMesssage" class="error">Error : {{ errorMesssage }}</p>
+          <br>
+        </div>
       </div>
     </div>
 
@@ -81,7 +85,7 @@
           type="textarea"
           float-label="Generated C# Interface"
           :max-height="150"
-          rows="8"
+          rows="10"
         />
       </div>
       <div class="col-2">
@@ -91,8 +95,6 @@
 
     <div class="row">
       <div class="col-8">
-        <br>
-        <br>
         <br>
       </div>
     </div>
@@ -106,7 +108,7 @@
           type="textarea"
           float-label="Generated C# Service"
           :max-height="150"
-          rows="8"
+          rows="10"
         />
       </div>
       <div class="col-2">
@@ -116,9 +118,9 @@
   </q-page>
 </template>
 
-<style>
+<style scoped>
 .csharp-code {
-  font-size: 10px;
+  font-size: 12px;
 }
 .error {
   color: red;
@@ -257,7 +259,7 @@ export default {
     DownloadInterface() {
       const file = new File(
         [this.generatedInterfaceText],
-        `${this.contract.name}Service.cs`,
+        `I${this.contract.name}Service.Generated.cs`,
         {
           type: 'text/plain;charset=utf-8',
         },
@@ -267,7 +269,7 @@ export default {
     DownloadService() {
       const file = new File(
         [this.generatedServiceText],
-        `I${this.contract.name}Interface.cs`,
+        `${this.contract.name}Service.Generated.cs`,
         {
           type: 'text/plain;charset=utf-8',
         },
