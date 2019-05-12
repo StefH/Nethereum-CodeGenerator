@@ -8,6 +8,7 @@ module.exports = {
     'no-console': process.env.NODE_ENV === 'production' ? 'error' : 'off',
     'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
     'class-methods-use-this': 0,
+    'linebreak-style': 'off',
     // 'comma-dangle': 0,
     'import/no-unresolved': 'off', // Suppress errors caused by import '@/...'
     'max-len': 'off', // Allow lines longer than 100 characters
@@ -16,17 +17,7 @@ module.exports = {
       'error', // Allow param reassigns required by Vuex
       {
         props: true,
-        ignorePropertyModificationsFor: [
-          'state',
-          'acc',
-          'e',
-          'ctx',
-          'req',
-          'request',
-          'res',
-          'response',
-          '$scope',
-        ],
+        ignorePropertyModificationsFor: ['state', 'acc', 'e', 'ctx', 'req', 'request', 'res', 'response', '$scope'],
       },
     ],
   },

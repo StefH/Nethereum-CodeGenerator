@@ -25,16 +25,18 @@ class ContractCompiler {
     const matches = [];
     let match = null;
 
+    // https://github.com/airbnb/javascript/issues/1439
     // eslint-disable-next-line no-cond-assign
     while ((match = importRegEx.exec(source))) {
       matches.push(match[3]);
     }
 
+    let sourceModified = source;
     matches.forEach((matchedImportStatement) => {
-      source.replace(matchedImportStatement, Utils.sanitizeImport(matchedImportStatement));
+      sourceModified = sourceModified.replace(matchedImportStatement, Utils.sanitizeImport(matchedImportStatement));
     });
 
-    return source;
+    return sourceModified;
   }
 
   static async getVersions() {
