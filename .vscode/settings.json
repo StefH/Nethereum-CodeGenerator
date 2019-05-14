@@ -1,0 +1,42 @@
+{
+  "cSpell.words": [
+    "Nethereum",
+    "Vuex",
+    "bytecode",
+    "bytecodes",
+    "ejslint",
+    "minifies",
+    "solcjs",
+    "stefh"
+  ],
+  "eslint.validate": [
+    {
+      "language": "vue",
+      "autoFix": true
+    },
+    {
+      "language": "html",
+      "autoFix": true
+    },
+    {
+      "language": "javascript",
+      "autoFix": true
+    },
+    {
+      "language": "javascriptreact",
+      "autoFix": true
+    }
+  ],
+  "editor.formatOnSave": true,
+  "eslint.runtime": "node",
+  "eslint.autoFixOnSave": true,
+  "vetur.format.defaultFormatter.js": "none",
+  "prettier.eslintIntegration": true,
+  "prettier.printWidth": 200,
+  "vetur.format.defaultFormatter.html": "js-beautify-html",
+  "vetur.format.defaultFormatterOptions": {
+    "js-beautify-html": {
+      "wrap_attributes": "auto"
+    }
+  }
+}
