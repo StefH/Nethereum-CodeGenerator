@@ -10,6 +10,9 @@
       <li>
         <a href="https://ejs.co/">ejs</a>
       </li>
+      <li>
+        <a href="https://github.com/eligrey/FileSaver.js/">file-saver</a>
+      </li>
     </ul>
     <br>
     <br>

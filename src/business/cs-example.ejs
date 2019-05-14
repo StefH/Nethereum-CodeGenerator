@@ -1,0 +1,54 @@
+using System;
+using System.Threading.Tasks;
+using Nethereum.Geth;
+using Nethereum.Hex.HexTypes;
+using Nethereum.Web3.Accounts.Managed;
+
+namespace <%= locals.namespace ? namespace : 'DefaultNamespace' %>
+{
+    static class Program
+    {
+        private const string Endpoint = "http://localhost:7545";
+
+        // Note that the password does not matter when connecting to local Ganache
+        private static readonly ManagedAccount ContractOwner = new ManagedAccount("0x5f8206Cb73897BF21ECA2305b17DDc09FCC06eDA", "test");
+
+        private static string _contractAddress;
+
+        public static void Main(string[] args)
+        {
+            TestService().Wait(15 * 60 * 1000);
+        }
+
+        private static async Task TestService()
+        {
+            var web3 = new Web3Geth(ContractOwner, Endpoint);
+
+            Console.WriteLine("Deploying Contract...");
+            _contractAddress = await <%= capitalizeFirstLetter(getContractName()) %>Service.DeployContractAsync(web3, ContractOwner.Address, null, null);
+            Console.WriteLine("Deploying Contract done");
+
+            await TestOther();
+        }
+
+        private static async Task TestOther()
+        {
+            Console.WriteLine("TestOther");
+            var web3 = new Web3Geth(ContractOwner, Endpoint);
+
+            I<%= capitalizeFirstLetter(getContractName()) %>Service service = new <%= capitalizeFirstLetter(getContractName()) %>Service(web3, _contractAddress);
+
+            // More code here...
+        }
+    }
+}
+
+<%_
+function getContractName() {
+   return locals._contractName ? locals._contractName : 'DefaultContractName';
+}
+
+function capitalizeFirstLetter(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+}
+_%>

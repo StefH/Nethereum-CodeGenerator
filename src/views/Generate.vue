@@ -1,7 +1,7 @@
 <template>
   <q-page padding>
     <p>
-      <b>Generate C# Interfaces and Classes</b>
+      <b>Generate a C# Interface and Implementation based on Solidity Smart Contract(s)</b>
     </p>
 
     <div class="row">
@@ -9,13 +9,7 @@
         <p class="caption">Main Solidity Contract</p>
       </div>
       <div class="col-3">
-        <q-uploader
-          ref="uploaderMain"
-          hide-upload-button
-          hide-upload-progress
-          url
-          :upload-factory="uploadMainContract"
-        />
+        <q-uploader ref="uploaderMain" hide-upload-button hide-upload-progress url :upload-factory="uploadMainContract" />
       </div>
     </div>
 
@@ -24,16 +18,7 @@
         <p class="caption">Imported Solidity Contract(s)</p>
       </div>
       <div class="col-3">
-        <q-uploader
-          ref="uploaderOther"
-          multiple
-          batch
-          hide-upload-button
-          hide-upload-progress
-          url
-          :upload-factory="uploadContracts"
-          @finish="uploadContractsFinish"
-        />
+        <q-uploader ref="uploaderOther" multiple batch hide-upload-button hide-upload-progress url :upload-factory="uploadContracts" @finish="uploadContractsFinish" />
       </div>
     </div>
 
@@ -42,7 +27,7 @@
         <p class="caption">Compiler Version</p>
       </div>
       <div class="col-2">
-        <q-select v-model="selectedCompiler" :options="selectCompilers"/>
+        <q-select v-model="selectedCompiler" :options="selectCompilers" />
       </div>
     </div>
 
@@ -51,13 +36,13 @@
         <p class="caption">Namespace</p>
       </div>
       <div class="col-2">
-        <q-input v-model="namespace"/>
+        <q-input v-model="namespace" />
       </div>
     </div>
 
     <div class="row">
       <div class="col-2">
-        <q-btn label="Generate" :disabled="busy" @click="OnClickGenerate"/>
+        <q-btn size="sm" icon="build" label="Generate" :disabled="busy" @click="OnClickGenerate" />
       </div>
     </div>
 
@@ -78,18 +63,10 @@
 
     <div class="row">
       <div class="col-8">
-        <q-input
-          class="csharp-code"
-          readonly
-          v-model="generatedInterfaceText"
-          type="textarea"
-          float-label="Generated C# Interface"
-          :max-height="150"
-          rows="10"
-        />
+        <q-input class="csharp-code" :loading="busy" readonly v-model="generatedInterfaceText" type="textarea" float-label="Generated C# Interface" :max-height="100" rows="7" />
       </div>
       <div class="col-2">
-        <q-btn label="Download" :disabled="downloadInterfaceDisabled" @click="DownloadInterface"/>
+        <q-btn size="sm" icon="save" label="Download" :disabled="downloadInterfaceDisabled" @click="DownloadInterface" />
       </div>
     </div>
 
@@ -101,18 +78,25 @@
 
     <div class="row">
       <div class="col-8">
-        <q-input
-          class="csharp-code"
-          readonly
-          v-model="generatedServiceText"
-          type="textarea"
-          float-label="Generated C# Service"
-          :max-height="150"
-          rows="10"
-        />
+        <q-input class="csharp-code" :loading="busy" readonly v-model="generatedServiceText" type="textarea" float-label="Generated C# Service" :max-height="100" rows="7" />
       </div>
       <div class="col-2">
-        <q-btn label="Download" :disabled="downloadServiceDisabled" @click="DownloadService"/>
+        <q-btn size="sm" icon="save" label="Download" :disabled="downloadServiceDisabled" @click="DownloadService" />
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-8">
+        <br>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-8">
+        <q-input class="csharp-code" :loading="busy" readonly v-model="generatedExampleText" type="textarea" float-label="Generated C# Example" :max-height="100" rows="7" />
+      </div>
+      <div class="col-2">
+        <q-btn size="sm" icon="save" label="Download" :disabled="downloadExampleDisabled" @click="DownloadExample" />
       </div>
     </div>
   </q-page>
@@ -120,7 +104,7 @@
 
 <style scoped>
 .csharp-code {
-  font-size: 12px;
+  font-size: 11px;
 }
 .error {
   color: red;
@@ -141,6 +125,9 @@ export default {
     downloadServiceDisabled() {
       return this.busy || this.generatedServiceText.length === 0;
     },
+    downloadExampleDisabled() {
+      return this.busy || this.generatedExampleText.length === 0;
+    },
   },
   data() {
     return {
@@ -152,6 +139,7 @@ export default {
       selectedCompiler: 'v0.5.2-stable-2018.12.19',
       generatedServiceText: '',
       generatedInterfaceText: '',
+      generatedExampleText: '',
       namespace: 'DefaultNamespace',
     };
   },
@@ -167,6 +155,7 @@ export default {
       this.errorMesssage = '';
       this.generatedServiceText = '';
       this.generatedInterfaceText = '';
+      this.generatedExampleText = '';
     },
     async generateCode() {
       try {
@@ -182,6 +171,7 @@ export default {
 
         this.generatedInterfaceText = result.generatedInterface[this.contract.name];
         this.generatedServiceText = result.generatedService[this.contract.name];
+        this.generatedExampleText = result.generatedExample;
 
         this.$refs.uploaderMain.reset();
         this.$refs.uploaderOther.reset();
@@ -270,6 +260,16 @@ export default {
       const file = new File(
         [this.generatedServiceText],
         `${this.contract.name}Service.Generated.cs`,
+        {
+          type: 'text/plain;charset=utf-8',
+        },
+      );
+      saveAs(file);
+    },
+    DownloadExample() {
+      const file = new File(
+        [this.generatedExampleText],
+        `${this.contract.name}Service.ConsoleApp.cs`,
         {
           type: 'text/plain;charset=utf-8',
         },

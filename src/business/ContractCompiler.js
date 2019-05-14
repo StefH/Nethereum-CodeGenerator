@@ -4,6 +4,7 @@ import Utils from './utils';
 // https://github.com/rails/webpacker/issues/408
 const ejsTemplateService = require('./cs-service.ejs');
 const ejsTemplateInterface = require('./cs-service-interface.ejs');
+const ejsTemplateExample = require('./cs-example.ejs');
 
 // This RegEx matches the import statements and replaces "./xxx.sol" and "./sub-folder/xxx.sol" by "xxx.sol"
 const importRegEx = /^(.*import){1}(.+){0,1}\s['"](.+)['"];/gm;
@@ -19,6 +20,7 @@ class ContractCompiler {
     this.combinedContractContent = '';
     this.generatedService = {};
     this.generatedInterface = {};
+    this.generatedExample = '';
   }
 
   replaceImports(source) {
@@ -76,6 +78,7 @@ class ContractCompiler {
       combinedContractContent: this.combinedContractContent,
       generatedService: this.generatedService,
       generatedInterface: this.generatedInterface,
+      generatedExample: this.generatedExample,
     };
   }
 
@@ -92,6 +95,9 @@ class ContractCompiler {
 
     console.log(`${contractName}: generate C# implementation(s)`);
     this.generatedService[contractName] = ejsTemplateService(combinedInput);
+
+    console.log(`${contractName}: generate C# example`);
+    this.generatedExample = ejsTemplateExample(combinedInput);
   }
 
   generateFilesForContract(contract) {

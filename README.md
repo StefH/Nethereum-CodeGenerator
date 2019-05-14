@@ -53,3 +53,5 @@ See also <https://cli.vuejs.org/guide/deployment.html>.
 ```cmd
 npm run lint
 ```
+
+See also <https://blog.jongallant.com/2019/02/vuejs-vetur-vscode-format-eslint-issues>
