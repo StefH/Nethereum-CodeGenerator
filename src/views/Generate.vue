@@ -1,113 +1,109 @@
 <template>
-  <q-page padding>
+  <q-page class="q-pa-lg">
     <p>
       <b>Generate a C# Interface and Implementation based on Solidity Smart Contract(s)</b>
     </p>
 
-    <div class="row">
-      <div class="col-2">
-        <p class="caption">Main Solidity Contract</p>
-      </div>
-      <div class="col-3">
-        <q-uploader ref="uploaderMain" hide-upload-button hide-upload-progress url :upload-factory="uploadMainContract" />
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-2">
-        <p class="caption">Imported Solidity Contract(s)</p>
-      </div>
-      <div class="col-3">
-        <q-uploader ref="uploaderOther" multiple batch hide-upload-button hide-upload-progress url :upload-factory="uploadContracts" @finish="uploadContractsFinish" />
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-2">
-        <p class="caption">Compiler Version</p>
-      </div>
-      <div class="col-2">
-        <q-select v-model="selectedCompiler" :options="selectCompilers" />
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-2">
-        <p class="caption">Namespace</p>
-      </div>
-      <div class="col-2">
-        <q-input v-model="namespace" />
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-2">
-        <q-btn size="sm" icon="build" label="Generate" :disabled="busy" @click="OnClickGenerate" />
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-8">
-        <div v-show="busy">
-          <br>
-          <p v-show="busy">Compiling contracts and generating C# Interface and Service...</p>
-          <br>
+    <div class="input-data">
+      <div class="row">
+        <div class="col-2">
+          <p class="caption">Main Solidity Contract</p>
         </div>
-        <div>
-          <br>
-          <p v-show="errorMesssage" class="error">Error : {{ errorMesssage }}</p>
-          <br>
+        <div class="col-3">
+          <q-uploader ref="uploaderMain" hide-upload-button hide-upload-progress url :upload-factory="uploadMainContract" />
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-2">
+          <p class="caption">Imported Solidity Contract(s)</p>
+        </div>
+        <div class="col-3">
+          <q-uploader ref="uploaderOther" multiple batch hide-upload-button hide-upload-progress url :upload-factory="uploadContracts" @finish="uploadContractsFinish" />
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-2">
+          <p class="caption">Compiler Version</p>
+        </div>
+        <div class="col-2">
+          <q-select v-model="selectedCompiler" :options="selectCompilers" />
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-2">
+          <p class="caption">Namespace</p>
+        </div>
+        <div class="col-2">
+          <q-input v-model="namespace" />
+        </div>
+      </div>
+
+      <div class="row q-mb-sm">
+        <div class="col-2">
+          <q-btn size="sm" icon="build" label="Generate" :disabled="busy" @click="OnClickGenerate" />
+        </div>
+        <div class="col-6">
+          <div v-show="busy">
+            <p>Compiling contracts and generating C# Interface and Service...</p>
+          </div>
+          <div>
+            <p v-show="errorMesssage" class="error">Error : {{ errorMesssage }}</p>
+          </div>
         </div>
       </div>
     </div>
 
     <div class="row">
-      <div class="col-8">
-        <q-input class="csharp-code" :loading="busy" readonly v-model="generatedInterfaceText" type="textarea" float-label="Generated C# Interface" :max-height="100" rows="7" />
+      <div class="col-8 code-block q-mb-md">
+        <highlight-code lang="cs" :code="generatedInterfaceText"></highlight-code>
       </div>
       <div class="col-2">
-        <q-btn size="sm" icon="save" label="Download" :disabled="downloadInterfaceDisabled" @click="DownloadInterface" />
+        <q-btn size="sm" icon="save" label="Interface" :disabled="downloadInterfaceDisabled" @click="DownloadInterface" />
       </div>
     </div>
 
     <div class="row">
-      <div class="col-8">
-        <br>
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-8">
-        <q-input class="csharp-code" :loading="busy" readonly v-model="generatedServiceText" type="textarea" float-label="Generated C# Service" :max-height="100" rows="7" />
+      <div class="col-8 code-block q-mb-md">
+        <highlight-code lang="cs" :code="generatedServiceText"></highlight-code>
       </div>
       <div class="col-2">
-        <q-btn size="sm" icon="save" label="Download" :disabled="downloadServiceDisabled" @click="DownloadService" />
+        <q-btn size="sm" icon="save" label="Service" :disabled="downloadServiceDisabled" @click="DownloadService" />
       </div>
     </div>
 
     <div class="row">
-      <div class="col-8">
-        <br>
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-8">
-        <q-input class="csharp-code" :loading="busy" readonly v-model="generatedExampleText" type="textarea" float-label="Generated C# Example" :max-height="100" rows="7" />
+      <div class="col-8 code-block q-mb-md">
+        <highlight-code lang="cs" :code="generatedExampleText"></highlight-code>
       </div>
       <div class="col-2">
-        <q-btn size="sm" icon="save" label="Download" :disabled="downloadExampleDisabled" @click="DownloadExample" />
+        <q-btn size="sm" icon="save" label="Example" :disabled="downloadExampleDisabled" @click="DownloadExample" />
       </div>
     </div>
   </q-page>
 </template>
 
-<style scoped>
-.csharp-code {
-  font-size: 11px;
+<style>
+.code-block {
+  border: 1px;
+  border-style: solid;
+  color: grey;
+}
+.hljs {
+  font-size: 0.7em;
+  height: 215px;
+}
+.input-data {
+  font-size: 0.9em;
 }
 .error {
   color: red;
+  font-size: 0.9em;
+}
+pre {
+  margin: 0em 0px;
 }
 </style>
 

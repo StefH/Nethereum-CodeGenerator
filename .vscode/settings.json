@@ -32,13 +32,25 @@
   "editor.formatOnSave": true,
   "eslint.runtime": "node",
   "eslint.autoFixOnSave": true,
-  "vetur.format.defaultFormatter.js": "none",
+  "prettier.stylelintIntegration": true,
   "prettier.eslintIntegration": true,
-  "prettier.printWidth": 200,
+  "prettier.semi": false,
+  "prettier.singleQuote": true,
+  "prettier.tabWidth": 2,
+  "prettier.printWidth": 999,
+  "vetur.format.defaultFormatter.js": "none",
   "vetur.format.defaultFormatter.html": "js-beautify-html",
   "vetur.format.defaultFormatterOptions": {
     "js-beautify-html": {
       "wrap_attributes": "auto"
+    },
+    "prettier": {
+      "stylelintIntegration": true,
+      "eslintIntegration": true,
+      "semi": false,
+      "singleQuote": true,
+      "tabWidth": 2,
+      "printWidth": 999,
     }
   }
 }

@@ -14,6 +14,14 @@ import 'quasar-extras/fontawesome';
 
 import Quasar from 'quasar';
 import Vue2Filters from 'vue2-filters';
+import VueHighlightJS from 'vue-highlight.js';
+import cs from 'highlight.js/lib/languages/cs';
+
+/*
+ * Import Highlight.js theme
+ * Find more: https://highlightjs.org/static/demo/
+ */
+import 'highlight.js/styles/vs.css';
 
 Vue.prototype.$appName = 'Nethereum Code Generator';
 
@@ -23,13 +31,15 @@ Vue.use(Quasar, {
 
 Vue.use(Vue2Filters);
 
-// Vue.filter('ALLCAPS', (value) => {
-//   if (!value) {
-//     return '';
-//   }
-
-//   return value.toUpperCase();
-// });
+/*
+ * Use Vue Highlight.js
+ */
+Vue.use(VueHighlightJS, {
+  // Register only languages that you want
+  languages: {
+    cs,
+  },
+});
 
 // https://webpack.js.org/guides/dependency-management/#require-context
 const requireComponent = require.context(

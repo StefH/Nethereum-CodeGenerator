@@ -17,6 +17,8 @@ A demo is running at [stefh.github.io/Nethereum-CodeGenerator](https://stefh.git
 - (7) : Click the download button to download the C# interface.
 - (8) : The generated C# Service is displayed here.
 - (9) : Click the download button to download the C# service.
+- (10) : The generated C# Example Console App is displayed here.
+- (11) : Click the download button to download the C# Console App Example code.
 
 ![generate](./screens/01.Generate.png)
 

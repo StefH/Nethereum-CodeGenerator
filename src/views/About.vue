@@ -13,6 +13,9 @@
       <li>
         <a href="https://github.com/eligrey/FileSaver.js/">file-saver</a>
       </li>
+      <li>
+        <a href="https://github.com/gluons/vue-highlight.js">vue-highlight.js</a>
+      </li>
     </ul>
     <br>
     <br>

@@ -16,6 +16,7 @@
   "dependencies": {
     "core-js": "^2.6.5",
     "file-saver": "^2.0.1",
+    "highlight.js": "^9.15.6",
     "lodash": "^4.17.11",
     "path": "^0.12.7",
     "quasar": "^1.0.0-beta.23",
@@ -23,6 +24,7 @@
     "quasar-framework": "^0.17.20",
     "solcjs-lightweight": "^0.4.0",
     "vue": "^2.6.10",
+    "vue-highlight.js": "^3.1.0",
     "vue-router": "^3.0.3",
     "vue2-filters": "^0.6.0"
   },

@@ -11,12 +11,16 @@
       </q-toolbar>
     </q-layout-header>
 
-    <q-layout-drawer v-model="leftDrawerOpen" :content-class="$q.theme === 'mat' ? 'bg-grey-2' : null">
+    <q-layout-drawer :width=180 v-model="leftDrawerOpen" :content-class="$q.theme === 'mat' ? 'bg-grey-2' : null">
       <q-list no-border link inset-delimiter>
         <q-list no-border link inset-delimiter>
           <q-item to="/generate">
             <q-item-side icon="settings" />
             <q-item-main label="Generate" />
+          </q-item>
+          <q-item to="/examples">
+            <q-item-side icon="folder_open" />
+            <q-item-main label="Examples" />
           </q-item>
           <q-item to="/about">
             <q-item-side icon="info" />
