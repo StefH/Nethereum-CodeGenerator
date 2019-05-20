@@ -27,7 +27,7 @@ namespace <%= locals.namespace ? namespace : 'DefaultNamespace' %>
 
             Console.WriteLine("Deploying Contract...");
             _contractAddress = await <%= capitalizeFirstLetter(getContractName()) %>Service.DeployContractAsync(web3, ContractOwner.Address, /* optional constructor parameters */ null, null);
-            Console.WriteLine("Deploying Contract done");
+            Console.WriteLine($"Deploying Contract done. Contract Address = {_contractAddress}");
 
             await TestOther();
         }
