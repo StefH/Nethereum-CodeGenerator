@@ -74,6 +74,8 @@ class ContractCompiler {
       this.generateFilesForContract(output[0]);
     }
 
+    this.generateExample(this.mainContract.name, this.generateNamespace(this.mainContract.name));
+
     return {
       combinedContractContent: this.combinedContractContent,
       generatedService: this.generatedService,
@@ -82,7 +84,7 @@ class ContractCompiler {
     };
   }
 
-  generateContractService(contractName, ns, abi, bytecode) {
+  generateInterfaceAndService(contractName, ns, abi, bytecode) {
     const combinedInput = {
       _contractName: contractName,
       abi: JSON.parse(abi),
@@ -95,6 +97,13 @@ class ContractCompiler {
 
     console.log(`${contractName}: generate C# implementation(s)`);
     this.generatedService[contractName] = ejsTemplateService(combinedInput);
+  }
+
+  generateExample(contractName, ns) {
+    const combinedInput = {
+      _contractName: contractName,
+      namespace: ns,
+    };
 
     console.log(`${contractName}: generate C# example`);
     this.generatedExample = ejsTemplateExample(combinedInput);
@@ -105,10 +114,12 @@ class ContractCompiler {
     const abi = JSON.stringify(contract.abi);
     const code = contract.binary.bytecodes.bytecode;
 
-    // replace *** by contractName (if present)
-    const namespace = this.preferredNamespace.endsWith('***') ? this.preferredNamespace.replace('***', contractName) : this.preferredNamespace;
+    this.generateInterfaceAndService(contractName, this.generateNamespace(contractName), abi, code);
+  }
 
-    this.generateContractService(contractName, namespace, abi, code);
+  // replace *** by contractName (if present)
+  generateNamespace(contractName) {
+    return this.preferredNamespace.endsWith('***') ? this.preferredNamespace.replace('***', contractName) : this.preferredNamespace;
   }
 
   stripContractContent(contractContent, baseContractName) {

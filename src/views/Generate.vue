@@ -47,7 +47,7 @@
         </div>
         <div class="col-6">
           <div v-show="busy">
-            <p>Compiling contracts and generating C# Interface and Service...</p>
+            <p>Compiling contracts and generating C# Interface, Service and Example ...</p>
           </div>
           <div>
             <p v-show="errorMesssage" class="error">Error : {{ errorMesssage }}</p>
