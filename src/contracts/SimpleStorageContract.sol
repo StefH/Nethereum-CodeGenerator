@@ -35,4 +35,8 @@ contract SimpleStorageContract {
     function getVersion() public view returns (int version, string memory description) {
         return (_version, _description);
     }
+
+    function addNumbers(uint number1, uint number2) public pure returns (uint) {
+        return number1 + number2;
+    }
 }
