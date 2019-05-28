@@ -74,14 +74,33 @@ class ContractCompiler {
       this.generateFilesForContract(output[0]);
     }
 
-    this.generateExample(this.mainContract.name, this.generateNamespace(this.mainContract.name));
-
     return {
       combinedContractContent: this.combinedContractContent,
       generatedService: this.generatedService,
       generatedInterface: this.generatedInterface,
       generatedExample: this.generatedExample,
     };
+  }
+
+  generateFilesForContract(contract) {
+    const contractName = contract.name;
+    const abi = JSON.stringify(contract.abi);
+    const code = contract.binary.bytecodes.bytecode;
+
+    this.generateInterfaceAndService(contractName, this.generateNamespace(contractName), abi, code);
+
+    this.generateExample(contractName, this.generateNamespace(contractName), abi);
+  }
+
+  generateExample(contractName, ns, abi) {
+    const combinedInput = {
+      _contractName: contractName,
+      abi: JSON.parse(abi),
+      namespace: ns,
+    };
+
+    console.log(`${contractName}: generate C# example`);
+    this.generatedExample = ejsTemplateExample(combinedInput);
   }
 
   generateInterfaceAndService(contractName, ns, abi, bytecode) {
@@ -97,24 +116,6 @@ class ContractCompiler {
 
     console.log(`${contractName}: generate C# implementation(s)`);
     this.generatedService[contractName] = ejsTemplateService(combinedInput);
-  }
-
-  generateExample(contractName, ns) {
-    const combinedInput = {
-      _contractName: contractName,
-      namespace: ns,
-    };
-
-    console.log(`${contractName}: generate C# example`);
-    this.generatedExample = ejsTemplateExample(combinedInput);
-  }
-
-  generateFilesForContract(contract) {
-    const contractName = contract.name;
-    const abi = JSON.stringify(contract.abi);
-    const code = contract.binary.bytecodes.bytecode;
-
-    this.generateInterfaceAndService(contractName, this.generateNamespace(contractName), abi, code);
   }
 
   // replace *** by contractName (if present)

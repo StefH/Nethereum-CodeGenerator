@@ -1,4 +1,5 @@
 using System;
+using System.Numerics;
 using System.Threading.Tasks;
 using Nethereum.Geth;
 using Nethereum.Hex.HexTypes;
@@ -26,7 +27,7 @@ namespace <%= locals.namespace ? namespace : 'DefaultNamespace' %>
             var web3 = new Web3Geth(ContractOwner, Endpoint);
 
             Console.WriteLine("Deploying Contract...");
-            _contractAddress = await <%= capitalizeFirstLetter(getContractName()) %>Service.DeployContractAsync(web3, ContractOwner.Address, /* optional constructor parameters */ null, null);
+            _contractAddress = await <%= capitalizeFirstLetter(getContractName()) %>Service.DeployContractAsync(web3, ContractOwner.Address, <%-generateConstructorInputParameters(abi)%> null, null); // If required, replace the constructor parameters.
             Console.WriteLine($"Deploying Contract done. Contract Address = {_contractAddress}");
 
             await TestOther();
@@ -51,5 +52,127 @@ function getContractName() {
 
 function capitalizeFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
+function generateConstructorInputParameters(abi) {
+    var ret = ''
+    abi.forEach(function(item) {
+        if (item.type === 'constructor') {
+            ret = generateFunctionTransactionInputParameters(item);
+        }
+    });
+    return ret;
+}
+
+function generateFunctionTransactionInputParameters(item) {
+    const params = generateFunctionInputParameters(item);
+
+    return params !== '' ? params + ',' : params;
+}
+
+function generateFunctionInputParameters(item) {
+    var params = '';
+    if (item.inputs !== null) {
+        item.inputs.forEach( function(input, index) {
+            var prefix = ', ';
+            if (params === '') {
+                prefix = '';
+            }
+            params = params + prefix + 'default(' + getTypeMap(input.type) + ')'; // Add default(...)
+        })
+    } 
+    return params;
+}
+
+function getTypeMap(typeName) {
+    const indexFirstBracket = typeName.indexOf('[');
+    if (indexFirstBracket > -1) {
+        var elementTypeName = typeName.substring(0, indexFirstBracket);
+        return getTypeMap(elementTypeName) + '[]';
+    }
+
+    if ('bool' === typeName) {
+        return typeName;
+    }
+
+    if (typeName.startsWith('int')) {
+        // default
+        if (typeName.length === 3) {
+            return 'BigInteger';
+        }
+
+        var length = parseInt(typeName.substring(3));
+        
+        if (length > 64) {
+            return 'BigInteger';
+        }
+
+        if (length <= 64 && length > 32) {
+            return 'long';
+        }
+
+        // ints are in 8 bits
+        if (length === 32 ) {
+            return 'int';
+        }
+
+        if (length === 16 ) {
+            return 'short';
+        }
+
+        if (length === 8 ) {
+            return 'sbyte';
+        }
+    }
+
+    if (typeName.startsWith('uint')) {
+       
+        if (typeName.length === 4) {
+            return 'BigInteger';
+        }
+
+        var length = parseInt(typeName.substring(4));
+        
+        if (length > 64) {
+            return 'BigInteger';
+        }
+
+        if (length <= 64 && length > 32) {
+            return 'ulong';
+        }
+        
+        // uints are in 8 bits steps
+        if (length === 32 ) {
+            return 'int';
+        }
+
+        if (length === 16 ) {
+            return 'short';
+        }
+
+        if (length === 8 ) {
+            return 'byte';
+        }
+    }
+
+    if (typeName === 'address') {
+        return 'string';
+    }
+
+    if (typeName === 'string') {
+        return 'string';
+    }
+
+    if (typeName === 'bytes') {
+        return 'byte[]';
+    }
+
+    // if (typeName === 'bytes32') {
+    //     return 'string';
+    // }
+
+    if (typeName.startsWith('bytes')) {
+        return 'byte[]';
+    }
 }
 _%>
