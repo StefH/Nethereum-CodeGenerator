@@ -22,8 +22,7 @@ namespace <%= locals.namespace ? namespace : 'DefaultNamespace' %>
         {
             if (gas == null)
             {
-                BigInteger estimatedGas = await web3.Eth.DeployContract.EstimateGasAsync(ABI, ByteCode, addressFrom).ConfigureAwait(false);
-                gas = new HexBigInteger(estimatedGas);
+                gas = await web3.Eth.DeployContract.EstimateGasAsync(ABI, ByteCode, addressFrom).ConfigureAwait(false);
             }
 
             var transactionReceipt = await web3.Eth.DeployContract.SendRequestAndWaitForReceiptAsync(ABI, ByteCode, addressFrom, gas, token<%-generateConstructorParameters(abi)%>).ConfigureAwait(false);
@@ -317,8 +316,7 @@ _%>
 
             if (gas == null)
             {
-                BigInteger estimatedGas = await function.EstimateGasAsync(addressFrom, gas, valueAmount<%- generateFunctionParametersCommaPrefix(item) -%>).ConfigureAwait(false);
-                gas = new HexBigInteger(estimatedGas);
+                gas = await function.EstimateGasAsync(addressFrom, gas, valueAmount<%- generateFunctionParametersCommaPrefix(item) -%>).ConfigureAwait(false);
             }
 
             return await function.CallAsync<%- getGenericReturnType(item) -%>(addressFrom, gas, valueAmount<%- generateFunctionParametersCommaPrefix(item) -%>).ConfigureAwait(false);
@@ -350,8 +348,7 @@ _%>
 
             if (gas == null)
             {
-                BigInteger estimatedGas = await function.EstimateGasAsync(addressFrom, gas, valueAmount<%- generateFunctionParametersCommaPrefix(item) -%>).ConfigureAwait(false);
-                gas = new HexBigInteger(estimatedGas);
+                gas = await function.EstimateGasAsync(addressFrom, gas, valueAmount<%- generateFunctionParametersCommaPrefix(item) -%>).ConfigureAwait(false);
             }
 
             return await function.CallDeserializingToObjectAsync<<%- capitalizeFirstLetter(item.name) -%>>(addressFrom, gas, valueAmount<%- generateFunctionParametersCommaPrefix(item) -%>).ConfigureAwait(false);
@@ -367,8 +364,7 @@ _%>
 
             if (gas == null)
             {
-                BigInteger estimatedGas = await function.EstimateGasAsync(addressFrom, gas, valueAmount<%- generateFunctionParametersCommaPrefix(item) -%>).ConfigureAwait(false);
-                gas = new HexBigInteger(estimatedGas);
+                gas = await function.EstimateGasAsync(addressFrom, gas, valueAmount<%- generateFunctionParametersCommaPrefix(item) -%>).ConfigureAwait(false);
             }
 
             return await function.SendTransactionAsync(addressFrom, gas, valueAmount<%- generateFunctionParametersCommaPrefix(item) -%>).ConfigureAwait(false);

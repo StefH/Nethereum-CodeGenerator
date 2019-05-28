@@ -8,10 +8,11 @@
     "build": "vue-cli-service build",
     "build-serve": "serve -s dist",
     "github": "vue-cli-service build --dest docs",
-    "github-serve": "serve -s docs",
+    "github-local": "vue-cli-service build --dest local-docs --mode development",
+    "github-local-serve": "serve -s local-docs",
     "lint": "vue-cli-service lint",
     "ejs-lint": "ejslint ./src/business/*.ejs",
-    "test:unit": "vue-cli-service test:unit"
+    "test": "vue-cli-service test:unit"
   },
   "dependencies": {
     "core-js": "^2.6.5",
