@@ -12,7 +12,9 @@
     "github-local-serve": "serve -s local-docs",
     "lint": "vue-cli-service lint",
     "ejs-lint": "ejslint ./src/business/*.ejs",
-    "test": "vue-cli-service test:unit"
+    "test": "vue-cli-service test:unit",
+    "snyk-protect": "snyk protect",
+    "prepare": "npm run snyk-protect"
   },
   "dependencies": {
     "core-js": "^2.6.5",
@@ -27,7 +29,8 @@
     "vue": "^2.6.10",
     "vue-highlight.js": "^3.1.0",
     "vue-router": "^3.0.3",
-    "vue2-filters": "^0.6.0"
+    "vue2-filters": "^0.6.0",
+    "snyk": "^1.189.0"
   },
   "devDependencies": {
     "@testerum/ejs-compiled-loader-webpack4-nodeps": "0.0.1",
@@ -48,5 +51,6 @@
     "stylus-loader": "^3.0.2",
     "vue-cli-plugin-quasar": "^0.17.1",
     "vue-template-compiler": "^2.5.21"
-  }
+  },
+  "snyk": true
 }
