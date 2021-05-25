@@ -1,5 +1,5 @@
 # Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
-version: v1.13.5
+version: v1.19.0
 ignore: {}
 # patches apply the minimum changes required to fix a vulnerability
 patch:
@@ -8,3 +8,30 @@ patch:
         patched: '2019-07-03T21:58:02.379Z'
     - solcjs-lightweight > solcjs-core > solc-version > lodash:
         patched: '2019-07-03T21:58:02.379Z'
+  SNYK-JS-HTTPSPROXYAGENT-469131:
+    - snyk > proxy-agent > https-proxy-agent:
+        patched: '2021-05-25T07:04:51.215Z'
+    - snyk > proxy-agent > pac-proxy-agent > https-proxy-agent:
+        patched: '2021-05-25T07:04:51.215Z'
+  SNYK-JS-LODASH-567746:
+    - snyk > lodash:
+        patched: '2021-05-25T07:04:51.215Z'
+    - snyk > @snyk/dep-graph > lodash:
+        patched: '2021-05-25T07:04:51.215Z'
+    - snyk > inquirer > lodash:
+        patched: '2021-05-25T07:04:51.215Z'
+    - snyk > snyk-config > lodash:
+        patched: '2021-05-25T07:04:51.215Z'
+    - snyk > snyk-nodejs-lockfile-parser > lodash:
+        patched: '2021-05-25T07:04:51.215Z'
+    - snyk > snyk-nuget-plugin > lodash:
+        patched: '2021-05-25T07:04:51.215Z'
+    - snyk > @snyk/dep-graph > graphlib > lodash:
+        patched: '2021-05-25T07:04:51.215Z'
+    - snyk > snyk-go-plugin > graphlib > lodash:
+        patched: '2021-05-25T07:04:51.215Z'
+    - snyk > snyk-nodejs-lockfile-parser > graphlib > lodash:
+        patched: '2021-05-25T07:04:51.215Z'
+  SNYK-JS-TREEKILL-536781:
+    - snyk > snyk-sbt-plugin > tree-kill:
+        patched: '2021-05-25T07:04:51.215Z'
